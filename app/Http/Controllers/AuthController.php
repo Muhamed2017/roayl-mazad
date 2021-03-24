@@ -21,9 +21,8 @@ use App\Events\UserCreated;
 use Illuminate\Foundation\Events\Dispatchable;
 use Carbon\Carbon;
 
-class RegisterController extends Controller
+class AuthController extends Controller
 {
-    //
 
 
     protected $auth;
@@ -45,6 +44,7 @@ class RegisterController extends Controller
                 'address' => 'nullable|string|max:250',
                 'email' => $guard == 'user' ? 'required|email|max:255|unique:users,email' : 'required|email|max:255|unique:users,email',
                 'password' => 'required|confirmed|min:6|max:255',
+                // 'avatar' =>'nullable|image|size:5000'
 
             ]);
         } catch (ValidationException $e) {
@@ -74,7 +74,6 @@ class RegisterController extends Controller
 
         if ($user->save()) {
 
-            // to be changed to doc file
             if ($request->hasFile('avatar')) {
                 (new AddImagesToEntity($request->avatar, $user, ["width" => 600]))->execute();
             }
@@ -82,7 +81,6 @@ class RegisterController extends Controller
             $token = auth('user')->login($user);
 
             $tokenExpiresAt = \Carbon\Carbon::now()->addMinutes(auth($guard)->factory()->getTTL() * 1)->toDateTimeString();
-            //  UserCreated::dispatch($user);
 
             return response()->json([
                 'successful' => '1',
@@ -158,12 +156,26 @@ class RegisterController extends Controller
                 'access_token' => $token,
                 'expires_at' => $tokenExpiresAt,
                 'id' => $user->id,
-                'name' => $user->fname,
-                'phone' => $user->lname,
-                'address' => $user->email,
-                'avatar' => $user->avatar ?? '',
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'address' => $user->address,
+                'avatar' => $user->avatar->img_url ?? '',
                 'type' => $guard
             ]
         ], 200);
+    }
+
+
+    // get the user
+    private function getUser(Request $request)
+    {
+        $user = null;
+        if (!empty($request->email)) {
+            $user = User::with('images')->where('email', $request->email)->first();
+        } else if (!empty($request->mobile)) {
+            $user = User::with('images')->where('mobile', $request->mobile)->first();
+        }
+        return $user;
     }
 }
