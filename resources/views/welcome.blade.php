@@ -15,9 +15,24 @@
         </style>
 
         <style>
+
             body {
                 font-family: 'Nunito', sans-serif;
                 color:#1a202c
+            }
+            .header{
+                font-size: 8rem;
+            }
+
+            @media screen and (max-width:1135px){
+                .header{
+                    font-size: 4rem !important;
+                }
+            }
+             @media screen and (max-width:540px){
+                .header{
+                    font-size: 2rem !important;
+                }
             }
         </style>
     </head>
@@ -25,8 +40,8 @@
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
 
 
-            <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-              <h1 style="font-size: 6rem">Royal Mazad APIs</h1>
+            <div class="col-md-12">
+              <h1  class="header">Royal Mazad APIs</h1>
             </div>
         </div>
     </body>

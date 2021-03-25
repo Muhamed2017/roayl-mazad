@@ -54,6 +54,13 @@ class User extends Authenticatable implements JWTSubject
     ];
 
 
+
+    public function vehicles()
+    {
+        return $this->hasMany('App\Models\Vehicle');
+    }
+
+
     public function getAvatarAttribute()
     {
         return $this->images != null ? $this->images->first() : '';

@@ -4,9 +4,7 @@ namespace App\Support\Services;
 
 use App\Models\Image;
 use App\Models\User;
-use App\Models\Product;
-use App\Models\Company;
-use App\Models\ProductDescription;
+use App\Models\Vehicle;
 use JD\Cloudder\Facades\Cloudder;
 use \Cloudinary\Uploader as Cloudinary;
 
@@ -70,24 +68,11 @@ class AddImagesToEntity
         }
 
 
-        if ($this->entityClassName === Product::class) {
+        if ($this->entityClassName === Vehicle::class) {
 
             return $this->uploadProductImage($image);
         }
 
-        if ($this->entityClassName === ProductOptions::class) {
-
-            return $this->uploadProductImage($image);
-        }
-        if ($this->entityClassName === ProductDescription::class) {
-
-            return $this->uploadProductImage($image);
-        }
-
-        if ($this->entityClassName === Company::class) {
-
-            return $this->uploadProductImage($image);
-        }
         return $this->uploadProductImage($image);
     }
 

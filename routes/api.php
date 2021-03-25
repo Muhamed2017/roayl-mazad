@@ -21,7 +21,12 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'auth'], function () {
     Route::post('signin', 'App\Http\Controllers\AuthController@login')->name('user');
     Route::post('signup', 'App\Http\Controllers\AuthController@register')->name('user');
-    // Route::post('resetpassword', 'Api\Site\RegisterController@resetPassword')->name('user');
-    // Route::post('verify', 'Api\Site\RegisterController@verify')->name('user');
+});
 
+Route::group(['middleware' => 'auth.user'], function () {
+    // Route::get('vehicles', 'App\Http\Controllers\VehicleController@fetch');
+    Route::post('vehicles', 'App\Http\Controllers\VehicleController@store')->name('user');
+    // Route::put('vehicle/{id}', 'App\Http\Controllers\VehicleController@update');
+    // Route::delete('vehicle/{id}', 'App\Http\Controllers\VehicleController@destroy');
+    // Route::get('user-vehicles', 'App\Http\Controllers\VehicleController@userVehicles');
 });
