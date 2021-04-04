@@ -20,7 +20,7 @@ class Vehicle extends Model
         'user_id', 'listed_by', 'vehicle_title', 'vehicle_vin', 'vehicle_vrn', 'primary_damage',
         'secondary_damage', 'category', 'color', 'transmission', 'fuel', 'engine_type', 'vat_added',
         'body_style', 'sell_type', 'drive', 'keys', 'state', 'model', 'year', 'company', 'starts_at_date',
-        'is_finished', 'odometer', 'notes', 'retail_value'
+        'is_finished', 'odometer', 'notes', 'retail_value', 'published'
     ];
 
     public function user()

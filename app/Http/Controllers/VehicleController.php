@@ -9,7 +9,6 @@ use Tymon\JWTAuth\JWTAuth;
 
 class VehicleController extends Controller
 {
-    //
     protected $auth;
 
     public function __construct(JWTAuth $auth)
@@ -39,9 +38,6 @@ class VehicleController extends Controller
         return response()->json($this->failedErr, 500);
     }
 
-
-
-
     public function getInput(Request $request)
     {
         $input = $request->only(
@@ -61,6 +57,7 @@ class VehicleController extends Controller
             'drive',
             'keys',
             'state',
+            'published',
             'model',
             'year',
             'company',
@@ -74,8 +71,6 @@ class VehicleController extends Controller
         return $input;
     }
 
-
-
     public function getValidationRules($id = '')
     {
         return [
@@ -85,6 +80,7 @@ class VehicleController extends Controller
             'vehicle_vin' => 'required|string|max:250',
             'vehicle_vrn' => 'required|string|max:250',
             'state' => 'nullable|string|max:250',
+            'published' => 'nullable|string|max:250',
             'company' => 'nullable|string|max:250',
             'engine_type' => 'required|string|max:250',
             'primary_damage' => 'required|string|max:250',
@@ -111,10 +107,33 @@ class VehicleController extends Controller
         ];
     }
 
-
-
+    // attaching vehicle model to image model function
     public function attachRelatedModels($vehicle, $request)
     {
         if ($request->hasFile('photos')) (new AddImagesToEntity($request->photos, $vehicle, ["width" => 1024]))->execute();
+    }
+
+
+    public function filter(Request $request)
+    {
+        return null;
+    }
+
+
+
+
+
+    // getting all published vehicles in new feed pahe
+    public function getAllVehicles()
+    {
+        $vehicles = Vehicle::with('images')->where('published', 'published')->latest()->get();
+
+        if (!$vehicles) return response()->json([
+            'message' => 'No Vehicles published'
+        ], 404);
+
+        return response()->json([
+            'vehicles' => $vehicles
+        ], 200);
     }
 }

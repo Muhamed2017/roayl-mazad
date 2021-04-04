@@ -30,3 +30,6 @@ Route::group(['middleware' => 'auth.user'], function () {
     // Route::delete('vehicle/{id}', 'App\Http\Controllers\VehicleController@destroy');
     // Route::get('user-vehicles', 'App\Http\Controllers\VehicleController@userVehicles');
 });
+
+// get all Vehicles endpoint
+Route::get('vehicles', 'App\Http\Controllers\VehicleController@getAllVehicles');
