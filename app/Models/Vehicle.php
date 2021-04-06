@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Vehicle extends Model
 {
@@ -31,6 +32,20 @@ class Vehicle extends Model
     public function images()
     {
         return $this->morphMany('App\Models\Image', 'imageable');
+    }
+
+
+
+
+    public function scopeTermSearch(Builder $query, $term): Builder
+    {
+        return $query->where('vehicle_title', 'LIKE', "%" . $term . "%")
+            ->orWhere('color', 'LIKE', "%" . $term . "%")
+            ->orWhere('transmission', 'LIKE', "%" . $term . "%")
+            ->orWhere('engine_type', 'LIKE', "%" . $term . "%")
+            ->orWhere('body_style', 'LIKE', "%" . $term . "%")
+            ->orWhere('primary_damage', 'LIKE', "%" . $term . "%")
+            ->orWhere('category', 'LIKE', "%" . $term . "%");
     }
 
 

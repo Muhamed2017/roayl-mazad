@@ -12,6 +12,8 @@ use Tymon\JWTAuth\JWTAuth;
 // use Kreait\Firebase\Messaging\Notification;
 
 use Kreait\Firebase\Database;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class VehicleController extends Controller
 {
@@ -131,7 +133,24 @@ class VehicleController extends Controller
 
     public function finder(Request $request)
     {
-        return null;
+        $year_min = 1800;
+        $year_max = 2060;
+        if ($request->has('year_min')) $year_min = $request->year_min;
+        if ($request->has('year_max')) $year_max = $request->year_max;
+
+        $vehicles = QueryBuilder::for(Vehicle::class)->with('images')
+            ->allowedFilters([
+                AllowedFilter::exact('category'),
+                AllowedFilter::scope('term_search')
+            ])->whereBetween('year', [$year_min, $year_max])
+            ->get();
+
+        if (empty($vehicles)) return response()->json(['message' => 'No such vehicles'], 404);
+
+        return response()->json([
+            'number_of_vehicles' => count($vehicles),
+            'vehicles' => $vehicles
+        ], 200);
     }
 
 
