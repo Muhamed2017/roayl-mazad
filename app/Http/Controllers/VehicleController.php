@@ -6,14 +6,22 @@ use App\Models\Vehicle;
 use App\Support\Services\AddImagesToEntity;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth;
+// use Kreait\Firebase;
+// use Kreait\Firebase\Factory;
+// use Kreait\Firebase\ServiceAccount;
+// use Kreait\Firebase\Messaging\Notification;
+
+use Kreait\Firebase\Database;
 
 class VehicleController extends Controller
 {
     protected $auth;
+    private $database;
 
-    public function __construct(JWTAuth $auth)
+    public function __construct(JWTAuth $auth, Database $database)
     {
         $this->auth = $auth;
+        $this->database = $database;
     }
 
     public function store(Request $request)
@@ -31,6 +39,13 @@ class VehicleController extends Controller
         $vehicle = new Vehicle($input);
 
         if ($vehicle->save()) {
+            $this->database->getReference('/vehicles')
+                ->push([
+                    'vehicle_id' => '2',
+                    'vehicle_title' => $vehicle->vehicle_title,
+                    'vehicle_initial_price' => $vehicle->retail_value
+                ]);
+
             $this->attachRelatedModels($vehicle, $request);
             return response()->json($this->entityCreatedSucc, 200);
         }
@@ -114,16 +129,14 @@ class VehicleController extends Controller
     }
 
 
-    public function filter(Request $request)
+    public function finder(Request $request)
     {
         return null;
     }
 
 
-
-
-
     // getting all published vehicles in new feed pahe
+
     public function getAllVehicles()
     {
         $vehicles = Vehicle::with('images')->where('published', 'published')->latest()->get();
