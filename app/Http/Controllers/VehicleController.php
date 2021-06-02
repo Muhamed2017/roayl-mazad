@@ -87,7 +87,8 @@ class VehicleController extends Controller
             'is_finished',
             'odometer',
             'notes',
-            'retail_value'
+            'retail_value',
+            'featured'
         );
 
         return $input;
@@ -108,6 +109,7 @@ class VehicleController extends Controller
             'primary_damage' => 'required|string|max:250',
             'retail_value' => 'required|string|max:250',
             'secondary_damage' => 'required|string|max:250',
+            'featured' => 'required|boolean',
             'color' => 'required|string|max:250',
             'transmission' => 'required|string|max:250',
             'vat_added' => 'required|numeric|max:250',
@@ -173,33 +175,16 @@ class VehicleController extends Controller
         ], 200);
     }
 
-    // save vehicles images locally
-    // public function saveImages($images, $entity)
-    // {
-    //     foreach ($images as $image) {
-    //         $new_name = rand() . '.' . $image->getClientOriginalExtension();
-    //         $path = $image->move(storage_path('/public/vehicles'), $new_name);
+    public function getFeaturedVehicles()
+    {
+        $vehicles = Vehicle::with('images')->where('featured', true)->latest()->get();
 
-    //         // dimension
-    //         $dimensions = getimagesize($path);
-    //         $stored = new Image();
-    //         $stored->img_url = url($path);
-    //         $stored->thumb_url = 'sssss';
-    //         $stored->img_public_id = 'sssss';
-    //         $stored->thumb_public_id = '555555';
-    //         $stored->img_width = $dimensions[0];
-    //         $stored->img_height = $dimensions[1];
-    //         $stored->thumb_width = '25564';
-    //         $stored->thumb_height = '25564';
-    //         $stored->img_bytes = $path->getSize() / 1024;
-    //         $stored->thumb_bytes = '25564';
-    //         $stored->format = $image->getClientOriginalExtension();
-    //         $stored->original_filename = $image->getClientOriginalName();
-    //         $entity->images()->save($stored);
-    //     }
+        if (!$vehicles) return response()->json([
+            'message' => 'No Featured Vehicles'
+        ], 404);
 
-    //     return response()->json([
-    //         'images' => $stored
-    //     ], 200);
-    // }
+        return response()->json([
+            'featured vehicles' => $vehicles
+        ], 200);
+    }
 }

@@ -33,4 +33,6 @@ Route::group(['middleware' => 'auth.user'], function () {
 
 // get all Vehicles endpoint
 Route::get('vehicles', 'App\Http\Controllers\VehicleController@getAllVehicles');
+Route::get('featured', 'App\Http\Controllers\VehicleController@getFeaturedVehicles');
+
 Route::get('vehicles/finder', 'App\Http\Controllers\VehicleController@finder');

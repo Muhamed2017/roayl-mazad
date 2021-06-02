@@ -41,7 +41,7 @@ class CreateVehicleTable extends Migration
             $table->string('company');
             $table->string('starts_at_date');
             $table->string('is_finished');
-            $table->boolean('featured')->default(false);
+            $table->tinyInteger('featured')->default(0);
             $table->string('published')->default('pending');
             $table->timestamps();
         });
