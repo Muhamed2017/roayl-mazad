@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Image;
 use App\Models\Vehicle;
 use App\Support\Services\AddImagesToEntity;
+use App\Support\Services\AttachImagesToModel;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth;
 // use Kreait\Firebase;
 // use Kreait\Firebase\Factory;
 // use Kreait\Firebase\ServiceAccount;
 // use Kreait\Firebase\Messaging\Notification;
-
+use Illuminate\Support\Facades\Storage;
 use Kreait\Firebase\Database;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -48,7 +50,10 @@ class VehicleController extends Controller
                     'vehicle_initial_price' => $vehicle->retail_value
                 ]);
 
-            $this->attachRelatedModels($vehicle, $request);
+            if ($request->hasFile('photos')) (new AttachImagesToModel($request->photos, $vehicle))->saveImages();
+
+
+            // $this->attachRelatedModels($vehicle, $request);
             return response()->json($this->entityCreatedSucc, 200);
         }
 
@@ -153,7 +158,6 @@ class VehicleController extends Controller
         ], 200);
     }
 
-
     // getting all published vehicles in new feed pahe
 
     public function getAllVehicles()
@@ -168,4 +172,34 @@ class VehicleController extends Controller
             'vehicles' => $vehicles
         ], 200);
     }
+
+    // save vehicles images locally
+    // public function saveImages($images, $entity)
+    // {
+    //     foreach ($images as $image) {
+    //         $new_name = rand() . '.' . $image->getClientOriginalExtension();
+    //         $path = $image->move(storage_path('/public/vehicles'), $new_name);
+
+    //         // dimension
+    //         $dimensions = getimagesize($path);
+    //         $stored = new Image();
+    //         $stored->img_url = url($path);
+    //         $stored->thumb_url = 'sssss';
+    //         $stored->img_public_id = 'sssss';
+    //         $stored->thumb_public_id = '555555';
+    //         $stored->img_width = $dimensions[0];
+    //         $stored->img_height = $dimensions[1];
+    //         $stored->thumb_width = '25564';
+    //         $stored->thumb_height = '25564';
+    //         $stored->img_bytes = $path->getSize() / 1024;
+    //         $stored->thumb_bytes = '25564';
+    //         $stored->format = $image->getClientOriginalExtension();
+    //         $stored->original_filename = $image->getClientOriginalName();
+    //         $entity->images()->save($stored);
+    //     }
+
+    //     return response()->json([
+    //         'images' => $stored
+    //     ], 200);
+    // }
 }

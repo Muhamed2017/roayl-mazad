@@ -18,6 +18,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
 use App\Support\Services\AddImagesToEntity;
 use App\Events\UserCreated;
+use App\Support\Services\AttachImagesToModel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Carbon\Carbon;
 
@@ -44,7 +45,7 @@ class AuthController extends Controller
                 'address' => 'nullable|string|max:250',
                 'email' => $guard == 'user' ? 'required|email|max:255|unique:users,email' : 'required|email|max:255|unique:users,email',
                 'password' => 'required|confirmed|min:6|max:255',
-                // 'avatar' =>'nullable|image|size:5000'
+                'avatar' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000'
 
             ]);
         } catch (ValidationException $e) {
@@ -74,9 +75,9 @@ class AuthController extends Controller
 
         if ($user->save()) {
 
-            if ($request->hasFile('avatar')) {
-                (new AddImagesToEntity($request->avatar, $user, ["width" => 600]))->execute();
-            }
+            if ($request->hasFile('avatar')) (new AttachImagesToModel($request->avatar, $user))->saveImages();
+            // (new AddImagesToEntity($request->avatar, $user, ["width" => 600]))->execute();
+
 
             $token = auth('user')->login($user);
 
