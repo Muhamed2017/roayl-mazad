@@ -30,7 +30,6 @@ class VehicleController extends Controller
 
     public function store(Request $request)
     {
-
         $this->validate($request, $this->getValidationRules());
         $this->validate($request, [
             'photos' => 'nullable|array',
@@ -174,6 +173,9 @@ class VehicleController extends Controller
             'vehicles' => $vehicles
         ], 200);
     }
+
+
+    // get all featured cars
 
     public function getFeaturedVehicles()
     {

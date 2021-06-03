@@ -34,5 +34,24 @@ Route::group(['middleware' => 'auth.user'], function () {
 // get all Vehicles endpoint
 Route::get('vehicles', 'App\Http\Controllers\VehicleController@getAllVehicles');
 Route::get('featured', 'App\Http\Controllers\VehicleController@getFeaturedVehicles');
-
 Route::get('vehicles/finder', 'App\Http\Controllers\VehicleController@finder');
+Route::get('ads', 'App\Http\Controllers\AdminController@getLastFiveAds');
+
+
+
+
+
+// admin apis
+
+Route::group(['prefix' => 'admin'], function () {
+
+
+    Route::post('signin', 'App\Http\Controllers\AuthController@login')->name('admin');
+    Route::post('signup', 'App\Http\Controllers\AuthController@register')->name('admin');
+
+    Route::group(['middleware' => 'auth_admin'], function () {
+        Route::post('blockuser/{id}', 'App\Http\Controllers\AdminController@changeStateOfUser');
+        Route::post('ads', 'App\Http\Controllers\AdminController@addAdvertisment');
+        Route::post('featuring/{id}', 'App\Http\Controllers\AdminController@setAsFeatured');
+    });
+});

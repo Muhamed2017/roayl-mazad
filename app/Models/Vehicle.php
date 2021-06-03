@@ -16,8 +16,9 @@ class Vehicle extends Model
         'odometer' => 'array',
         'notes' => 'array',
     ];
-    protected $fillable = [
 
+
+    protected $fillable = [
         'user_id', 'listed_by', 'vehicle_title', 'vehicle_vin', 'vehicle_vrn', 'primary_damage',
         'secondary_damage', 'category', 'color', 'transmission', 'fuel', 'engine_type', 'vat_added',
         'body_style', 'sell_type', 'drive', 'keys', 'state', 'model', 'year', 'company', 'starts_at_date',
@@ -29,12 +30,11 @@ class Vehicle extends Model
         return $this->belongsTo('App\Models\User');
     }
 
+
     public function images()
     {
         return $this->morphMany('App\Models\Image', 'imageable');
     }
-
-
 
 
     public function scopeTermSearch(Builder $query, $term): Builder
@@ -47,8 +47,6 @@ class Vehicle extends Model
             ->orWhere('primary_damage', 'LIKE', "%" . $term . "%")
             ->orWhere('category', 'LIKE', "%" . $term . "%");
     }
-
-
 
     public static function boot()
     {

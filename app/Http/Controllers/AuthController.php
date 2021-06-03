@@ -18,6 +18,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
 use App\Support\Services\AddImagesToEntity;
 use App\Events\UserCreated;
+use App\Models\Admin;
 use App\Support\Services\AttachImagesToModel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Carbon\Carbon;
@@ -41,12 +42,11 @@ class AuthController extends Controller
         try {
             $this->validate($request, [
                 'name' => 'nullable|string|max:255',
-                'phone' => 'required|string|max:255',
+                'phone' => $guard == 'user' ? 'required|string|max:255' : 'nullable|string|max:255',
                 'address' => 'nullable|string|max:250',
-                'email' => $guard == 'user' ? 'required|email|max:255|unique:users,email' : 'required|email|max:255|unique:users,email',
+                'email' => $guard == 'user' ? 'required|email|max:255|unique:users,email' : 'required|email|max:255|unique:admins,email',
                 'password' => 'required|confirmed|min:6|max:255',
                 'avatar' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000'
-
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -61,16 +61,29 @@ class AuthController extends Controller
             'phone',
             'email',
             'address',
-            'password'
+            'password',
+        );
+        $admin_input = $request->only(
+            'name',
+            'email',
+            'password',
         );
 
         $user_input['password'] = bcrypt($request->get('password'));
         $user_input['active'] = 0;
         $user_input['verification_token'] = Str::random(64);
 
+
+        $admin_input['password'] = bcrypt($request->get('password'));
+        $admin_input['active'] = 1;
+        $admin_input['verification_token'] = Str::random(64);
+
         if ($guard == 'user') {
 
             $user = new User($user_input);
+        } else {
+
+            $user = new Admin($admin_input);
         }
 
         if ($user->save()) {
@@ -79,7 +92,7 @@ class AuthController extends Controller
             // (new AddImagesToEntity($request->avatar, $user, ["width" => 600]))->execute();
 
 
-            $token = auth('user')->login($user);
+            $token = auth($guard)->login($user);
 
             $tokenExpiresAt = \Carbon\Carbon::now()->addMinutes(auth($guard)->factory()->getTTL() * 1)->toDateTimeString();
 
@@ -91,8 +104,8 @@ class AuthController extends Controller
                 'Bearer_token' => $token,
                 'expires_at' => $tokenExpiresAt,
                 'user' => $user,
+                // 'state' => $user->account_state && $guard == 'user' ?? 'pending',
                 'type' => $guard
-
             ], 200);
         }
 
@@ -114,7 +127,13 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = $this->getUser($request);
+        // $user = $this->getUser($request);
+
+        if ($guard == 'user') {
+            $user = $this->getUser($request);
+        } else {
+            $user = $this->getAdmin($request);
+        }
         // Check if user exist
         if (!$user) {
             return response()->json([
@@ -162,6 +181,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'address' => $user->address,
                 'avatar' => $user->avatar->img_url ?? '',
+                'state' => $user->account_state,
                 'type' => $guard
             ]
         ], 200);
@@ -178,5 +198,16 @@ class AuthController extends Controller
             $user = User::with('images')->where('mobile', $request->mobile)->first();
         }
         return $user;
+    }
+
+
+    private function getAdmin(Request $request)
+    {
+        $admin = null;
+
+        if (!empty($request->email)) {
+            $admin = Admin::with('images')->where('email', $request->email)->first();
+        }
+        return $admin;
     }
 }

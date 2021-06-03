@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AuthenticateAdmin;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -64,6 +65,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.user'  =>  \Tymon\JWTAuth\Http\Middleware\Authenticate::class, // JWT middleware
         'auth_user' => AuthenticateUser::class,
+        'auth_admin' => AuthenticateAdmin::class,
 
     ];
 }
