@@ -54,7 +54,6 @@ class Vehicle extends Model
         parent::boot();
         static::deleting(function ($vehicle) {
 
-
             if (count($vehicle->images) > 0) {
                 foreach ($vehicle->images as $image) {
                     $image->delete();

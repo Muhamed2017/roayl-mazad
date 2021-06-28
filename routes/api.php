@@ -45,7 +45,6 @@ Route::get('ads', 'App\Http\Controllers\AdminController@getLastFiveAds');
 
 Route::group(['prefix' => 'admin'], function () {
 
-
     Route::post('signin', 'App\Http\Controllers\AuthController@login')->name('admin');
     Route::post('signup', 'App\Http\Controllers\AuthController@register')->name('admin');
 
