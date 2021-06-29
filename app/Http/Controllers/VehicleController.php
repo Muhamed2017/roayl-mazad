@@ -302,7 +302,8 @@ class VehicleController extends Controller
         return response()->json([
             'ads' => $ads,
             'fetuered' => $vehicles,
-            'user_cars' => $vehicles
+            'user_cars_won' => $vehicles,
+            'user_cars_counter' => $vehicles
         ], 200);
     }
 }
