@@ -264,4 +264,45 @@ class VehicleController extends Controller
             'vehicles' => $vehicles,
         ], 200);
     }
+
+    public function getHomestuff()
+    {
+        $vehicles = collect($this->dummy_vehicles);
+        $ads = collect([
+            [
+                'title' => 'Advertisment One',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/FF0000/FFFFFF?Text=AdOne'
+            ],
+            [
+                'title' => 'Advertisment Two',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/00FF00/FFFFFF?Text=AdTwo'
+            ],
+            [
+                'title' => 'Advertisment Three',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/FFFF00/FFFFFF?Text=AdThree'
+            ],
+            [
+                'title' => 'Advertisment Four',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/000000/FFFFFF?Text=AdFour'
+            ],
+            [
+                'title' => 'Advertisment Five',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/0000FF/FFFFFF?Text=AdFive'
+            ],
+        ]);
+        if (!$vehicles || !$ads) return response()->json([
+            'message' => 'some thing went weong!'
+        ], 500);
+
+        return response()->json([
+            'ads' => $ads,
+            'fetuered' => $vehicles,
+            'user_cars' => $vehicles
+        ], 200);
+    }
 }

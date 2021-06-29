@@ -37,6 +37,9 @@ Route::get('vehicles/finder', 'App\Http\Controllers\VehicleController@finder');
 Route::get('ads', 'App\Http\Controllers\VehicleController@getHomeAds');
 Route::get('my-cars', 'App\Http\Controllers\VehicleController@getUserVehicles');
 Route::get('featured', 'App\Http\Controllers\VehicleController@getFeaturedVehicles');
+Route::get('home', 'App\Http\Controllers\VehicleController@getHomestuff');
+
+
 
 
 
