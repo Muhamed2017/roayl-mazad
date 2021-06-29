@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ad;
 use App\Models\Image;
 use App\Models\Vehicle;
 use App\Support\Services\AddImagesToEntity;
@@ -21,6 +22,29 @@ class VehicleController extends Controller
 {
     protected $auth;
     private $database;
+
+    private $dummy_vehicles = [
+        [
+            'vehicle_title' => 'Tesla', 'model' => '2021', 'odemeter' => '196.520', 'fuel' => '95', 'lot' => '#533654 | MD - BALTIMORE | C/3550',
+            'img' => 'https://www.drivespark.com/images/2021-06/skoda-kushaq-39.jpg'
+        ],
+        [
+            'vehicle_title' => 'Nissan', 'model' => '2019', 'odemeter' => '192.53', 'fuel' => '90', 'lot' => '#966322 | MD - OMAN | C/3550',
+            'img' => 'https://www.drivespark.com/images/2021-06/ferrari-296-gtb-1.jpg'
+        ],
+        [
+            'vehicle_title' => 'Toyota', 'model' => '2020', 'odemeter' => '126.220', 'fuel' => '92', 'lot' => '#366512 | MD - EGYPT | C/3550',
+            'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-3.jpg'
+        ],
+        [
+            'vehicle_title' => 'Nissan', 'model' => '2018', 'odemeter' => '166.16', 'fuel' => '80', 'lot' => '#200254 | MD - NY City | C/2550',
+            'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-7.jpg'
+        ],
+        [
+            'vehicle_title' => 'BMW', 'model' => '2020', 'odemeter' => '255.520', 'fuel' => '92', 'lot' => '#369834 | MD - KWAIT | C/3130',
+            'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-9.jpg'
+        ],
+    ];
 
     public function __construct(JWTAuth $auth, Database $database)
     {
@@ -163,7 +187,8 @@ class VehicleController extends Controller
 
     public function getAllVehicles()
     {
-        $vehicles = Vehicle::with('images')->where('published', 'published')->latest()->get();
+        // $vehicles = Vehicle::with('images')->where('published', '0')->latest()->get();
+        $vehicles = Vehicle::with('images')->latest()->get();
 
         if (!$vehicles) return response()->json([
             'message' => 'No Vehicles published'
@@ -175,18 +200,68 @@ class VehicleController extends Controller
     }
 
 
+
     // get all featured cars
 
     public function getFeaturedVehicles()
     {
-        $vehicles = Vehicle::with('images')->where('featured', true)->latest()->get();
+        // $vehicles = Vehicle::with('images')->where('featured', true)->latest()->get('vehicle_title');
 
+        $vehicles = collect($this->dummy_vehicles);
         if (!$vehicles) return response()->json([
             'message' => 'No Featured Vehicles'
         ], 404);
 
         return response()->json([
-            'featured vehicles' => $vehicles
+            'featured vehicles' => $vehicles,
+        ], 200);
+    }
+
+    public function getHomeAds()
+    {
+
+        $ads = collect([
+            [
+                'title' => 'Advertisment One',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/FF0000/FFFFFF?Text=AdOne'
+            ],
+            [
+                'title' => 'Advertisment Two',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/00FF00/FFFFFF?Text=AdTwo'
+            ],
+            [
+                'title' => 'Advertisment Three',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/FFFF00/FFFFFF?Text=AdThree'
+            ],
+            [
+                'title' => 'Advertisment Four',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/000000/FFFFFF?Text=AdFour'
+            ],
+            [
+                'title' => 'Advertisment Five',
+                'link' => '#',
+                'img' => 'https://via.placeholder.com/150/0000FF/FFFFFF?Text=AdFive'
+            ],
+        ]);
+
+        return response()->json([
+            'Advirtesment' => $ads
+        ], 200);
+    }
+
+    public function getUserVehicles()
+    {
+        $vehicles = collect($this->dummy_vehicles);
+        if (!$vehicles) return response()->json([
+            'message' => 'You have no vehicles yet!'
+        ], 404);
+
+        return response()->json([
+            'vehicles' => $vehicles,
         ], 200);
     }
 }
