@@ -132,7 +132,7 @@ class VehicleController extends Controller
             'primary_damage' => 'required|string|max:250',
             'retail_value' => 'required|string|max:250',
             'secondary_damage' => 'required|string|max:250',
-            'featured' => 'required|boolean',
+            'featured' => 'nullable|boolean',
             'color' => 'required|string|max:250',
             'transmission' => 'required|string|max:250',
             'vat_added' => 'required|numeric|max:250',
