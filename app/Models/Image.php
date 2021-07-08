@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use \Cloudinary\Uploader as Cloudinary;
+// use \Cloudinary\Uploader as Cloudinary;
 
 class Image extends Model
 {
@@ -11,13 +11,14 @@ class Image extends Model
     protected $table = 'images';
 
     protected $fillable = [
-        'image_url', 'thumb_url', 'img_public_id', 'thumb_public_id',
-        'img_width', 'img_height', 'thumb_width', 'thumb_height', 'format',
-        'original_filename'
+        'image_url',
     ];
 
     protected $hidden = [
-        'img_public_id', 'thumb_public_id', 'imageable_id', 'imageable_type'
+        'id', 'img_width', 'img_height', 'format',
+        'imageable_id', 'imageable_type', 'img_bytes',
+        'original_filename', 'created_at', 'updated_at'
+
     ];
 
     public function imageable()
@@ -30,8 +31,9 @@ class Image extends Model
     {
         parent::boot();
         static::deleting(function ($image) {
-            Cloudinary::destroy($image->img_public_id);
-            Cloudinary::destroy($image->thumb_public_id);
+            // Cloudinary::destroy($image->img_public_id);
+            // Cloudinary::destroy($image->thumb_public_id);
+            // $image->destroy
         });
     }
 }

@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Ad;
 use App\Models\Image;
+use App\Models\Saved;
+use App\Models\User;
 use App\Models\Vehicle;
 use App\Support\Services\AddImagesToEntity;
 use App\Support\Services\AttachImagesToModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Tymon\JWTAuth\JWTAuth;
 // use Kreait\Firebase;
 // use Kreait\Firebase\Factory;
@@ -17,6 +21,8 @@ use Illuminate\Support\Facades\Storage;
 use Kreait\Firebase\Database;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class VehicleController extends Controller
 {
@@ -59,18 +65,25 @@ class VehicleController extends Controller
             'photos' => 'nullable|array',
             'photos.*' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000|dimensions:min_width=1024,max_height=1024'
         ]);
+
         $guard = $request->route()->getName();
+        $owner = User::findOrFail(auth($guard)->id());
+
         $input = $this->getInput($request);
         $input['user_id'] = auth($guard)->id();
         $input['listed_by'] = $guard;
         $vehicle = new Vehicle($input);
 
         if ($vehicle->save()) {
-            $this->database->getReference('/vehicles')
+            $this->database->getReference('/Auctions')
                 ->push([
                     'vehicle_id' => '2',
                     'vehicle_title' => $vehicle->vehicle_title,
-                    'vehicle_initial_price' => $vehicle->retail_value
+                    'listed_by' => $owner->name,
+                    'vehicle_initial_price' => $vehicle->retail_value,
+                    // 'vehicle_start_data' => $vehicle->starts_at_date,
+                    'vehicle_start_data' => Carbon::createFromDate()->addDays(5),
+                    'sell_type' => $vehicle->sell_type
                 ]);
 
             if ($request->hasFile('photos')) (new AttachImagesToModel($request->photos, $vehicle))->saveImages();
@@ -88,30 +101,27 @@ class VehicleController extends Controller
         $input = $request->only(
             'vehicle_title',
             'vehicle_vin',
-            'vehicle_vrn',
             'primary_damage',
-            'secondary_damage',
-            'category',
-            'color',
             'transmission',
             'fuel',
+            'special_notes',
+            'retail_value',
+            'odometer',
             'engine_type',
             'vat_added',
-            'body_style',
             'sell_type',
+            'selender',
             'drive',
             'keys',
-            'state',
             'published',
+            'featured',
+
             'model',
             'year',
             'company',
-            'starts_at_date',
-            'is_finished',
-            'odometer',
-            'notes',
-            'retail_value',
-            'featured'
+            'category',
+            'color',
+            'starts_at_date'
         );
 
         return $input;
@@ -122,35 +132,29 @@ class VehicleController extends Controller
         return [
 
             'vehicle_title' => 'required|string|max:250',
-            'category' => 'required|string|max:250',
             'vehicle_vin' => 'required|string|max:250',
-            'vehicle_vrn' => 'required|string|max:250',
-            'state' => 'nullable|string|max:250',
             'published' => 'nullable|string|max:250',
-            'company' => 'nullable|string|max:250',
-            'engine_type' => 'required|string|max:250',
-            'primary_damage' => 'required|string|max:250',
-            'retail_value' => 'required|string|max:250',
-            'secondary_damage' => 'required|string|max:250',
+            'engine_type' => 'nullable|string|max:250',
+            'primary_damage' => 'nullable|string|max:250',
+            'retail_value' => 'required|numeric|max:10000',
             'featured' => 'nullable|boolean',
-            'color' => 'required|string|max:250',
             'transmission' => 'required|string|max:250',
             'vat_added' => 'required|numeric|max:250',
+            'selender' => 'required|numeric|max:250',
             'fuel' => 'required|string|max:250',
             'keys' => 'required|string|max:250',
             'drive' => 'required|string|max:250',
             'sell_type' => 'required|string|max:250',
-            'notes' => 'nullable|array',
-            'notes.*' => 'nullable|string|max:250',
-            'body_style' => 'string|max:250',
-            'odometer' => 'required|array',
-            'odometer.*' => 'required|string|max:250',
-            'year' => 'string|max:50',
-            'model' => 'string|max:250',
-            'is_finished' => 'string|max:50',
-            'starts_at_date' => 'string|max:250',
+            'special_notes' => 'nullable|array',
+            'special_notes.*' => 'nullable|string|max:250',
+            'odometer' => 'required|numeric',
 
-
+            'company' => 'nullable|string|max:250',
+            'category' => 'nullable|string|max:250',
+            'color' => 'nullable|string|max:250',
+            'year' => 'nullable|string|max:50',
+            'model' => 'nullable|string|max:250',
+            'starts_at_date' => 'nullable|string|max:250',
         ];
     }
 
@@ -163,23 +167,23 @@ class VehicleController extends Controller
 
     public function finder(Request $request)
     {
-        $year_min = 1800;
-        $year_max = 2060;
-        if ($request->has('year_min')) $year_min = $request->year_min;
-        if ($request->has('year_max')) $year_max = $request->year_max;
+        $year_min = $request->year_min ?? 1800;
+        $year_max = $request->year_max ?? 2060;
 
         $vehicles = QueryBuilder::for(Vehicle::class)->with('images')
             ->allowedFilters([
                 AllowedFilter::exact('category'),
                 AllowedFilter::scope('term_search')
             ])->whereBetween('year', [$year_min, $year_max])
+            ->select('id', 'vehicle_title', 'listed_by', 'model', 'color', 'odometer')
+            ->where('published', 0) // to be changed to 1 ..
             ->get();
 
         if (empty($vehicles)) return response()->json(['message' => 'No such vehicles'], 404);
 
         return response()->json([
-            'number_of_vehicles' => count($vehicles),
-            'vehicles' => $vehicles
+            'number_of_vehicless' => count($vehicles),
+            'vehicles' => $vehicles,
         ], 200);
     }
 
@@ -305,5 +309,89 @@ class VehicleController extends Controller
             'user_cars_won' => $vehicles,
             'user_cars_counter' => $vehicles
         ], 200);
+    }
+
+
+    //saving a vehicle
+
+    public function save($id)
+    {
+        $user = auth('user')->user();
+        $vehicle = Vehicle::find($id);
+        if (!$user) {
+            return response()->json([
+                'successful' => '0',
+                'status' => '02',
+                'message' => 'user not found'
+            ], 422);
+        }
+        $user_id = $user->id;
+
+        $is_saved = Saved::all()->where('user_id', '==', $user_id)
+            ->where('vehicle_id', '==', $id)
+            ->first();
+
+        if ($is_saved == null) {
+            $saved = new Saved();
+            $saved->user_id        = $user_id;
+            $saved->vehicle_id       = $vehicle->id;
+            if ($saved->save()) {
+                return response()->json([
+                    'successful' => '1',
+                    'status' => '01',
+                    'message' => 'Vehicle saved successfully',
+                ], 200);
+            } else {
+                return response()->json([
+                    'successful' => '0',
+                    'status' => '02',
+                    'message' => 'Something Went Wrong, Try again',
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'successful' => '0',
+                'status' => '02',
+                'message' => 'Vehiicle is already saved',
+            ], 409);
+        }
+    }
+
+
+
+    //unsave vehicle
+    public function unsave($id)
+    {
+        $user = auth('user')->user();
+        if (!$user) {
+            return response()->json([
+                'successful' => '0',
+                'status' => '02',
+                'message' => 'user not found'
+            ], 422);
+        }
+        $user_id = $user->id;
+
+        $saved = Saved::all()->where('user_id', '==', $user_id)
+            ->where('vehicle_id', '==', $id)
+            ->first();
+
+        if (empty($saved)) {
+            return response()->json([
+                'successful' => '0',
+                'status' => '02',
+                'message' => 'Vehicle was not saved'
+            ], 409);
+        } else {
+            $vehicle = Vehicle::findOrFail($id);
+            $saved->delete();
+
+            $vehicle->save();
+            return response()->json([
+                'successful' => '1',
+                'status' => '01',
+                'message' => 'vehicle removed from saved successfully'
+            ], 200);
+        }
     }
 }

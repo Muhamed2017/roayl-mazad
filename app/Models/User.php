@@ -60,6 +60,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany('App\Models\Vehicle');
     }
 
+    public function savedVehicles()
+    {
+        return $this->belongsToMany('App\Models\Saved');
+    }
+
 
     public function getAvatarAttribute()
     {

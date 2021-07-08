@@ -52,6 +52,13 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
         ],
 
+        "uploads" => [
+            "driver" => "local",
+            "root" => "/Work/royal_mazad_apis/public/uploads/images",
+            "visibility" => "public",
+            "url" => "http://localhost:8000/uploads/images/",
+        ],
+
     ],
 
     /*

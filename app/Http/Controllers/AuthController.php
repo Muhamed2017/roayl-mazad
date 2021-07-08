@@ -10,6 +10,7 @@ use App\Models\PasswordReset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use mysql_xdevapi\Exception;
+use Illuminate\Validation\Validator;
 use Response;
 use Hash;
 use Illuminate\Support\Facades\Austh;
