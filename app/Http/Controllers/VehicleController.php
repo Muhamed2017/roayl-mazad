@@ -13,10 +13,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Tymon\JWTAuth\JWTAuth;
-// use Kreait\Firebase;
-// use Kreait\Firebase\Factory;
-// use Kreait\Firebase\ServiceAccount;
-// use Kreait\Firebase\Messaging\Notification;
 use Illuminate\Support\Facades\Storage;
 use Kreait\Firebase\Database;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -77,13 +73,17 @@ class VehicleController extends Controller
         if ($vehicle->save()) {
             $this->database->getReference('/Auctions')
                 ->push([
-                    'vehicle_id' => '2',
+                    'vehicle_id' => $vehicle->id,
                     'vehicle_title' => $vehicle->vehicle_title,
-                    'listed_by' => $owner->name,
+                    'listed_name' => $owner->name,
+                    'lister_id' => $owner->id,
                     'vehicle_initial_price' => $vehicle->retail_value,
-                    // 'vehicle_start_data' => $vehicle->starts_at_date,
-                    'vehicle_start_data' => Carbon::createFromDate()->addDays(5),
-                    'sell_type' => $vehicle->sell_type
+                    'vehicle_start_data' => $vehicle->starts_at_date,
+                    'sell_type' => $vehicle->sell_type,
+                    'initial_price' => 0,
+                    'negotiation_price' => 0
+                    // 'vehicle_start_data' => Carbon::createFromDate()->addDays(5),
+
                 ]);
 
             if ($request->hasFile('photos')) (new AttachImagesToModel($request->photos, $vehicle))->saveImages();
@@ -175,7 +175,7 @@ class VehicleController extends Controller
                 AllowedFilter::exact('category'),
                 AllowedFilter::scope('term_search')
             ])->whereBetween('year', [$year_min, $year_max])
-            ->select('id', 'vehicle_title', 'listed_by', 'model', 'color', 'odometer')
+            ->select('id', 'vehicle_title', 'fuel', 'model', 'color', 'odometer')
             ->where('published', 0) // to be changed to 1 ..
             ->get();
 
@@ -356,8 +356,6 @@ class VehicleController extends Controller
             ], 409);
         }
     }
-
-
 
     //unsave vehicle
     public function unsave($id)

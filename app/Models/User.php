@@ -20,6 +20,9 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'phone',
+        'country',
+        'city',
+        'dob',
         'address',
         'email',
         'password',
@@ -37,7 +40,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
 
-    protected $appends = ['avatar'];
+    protected $appends = ['avatar', 'id_file'];
 
     /**
      * The attributes that should be cast to native types.
@@ -69,6 +72,11 @@ class User extends Authenticatable implements JWTSubject
     public function getAvatarAttribute()
     {
         return $this->images != null ? $this->images->first() : '';
+    }
+
+    public function getIdFileAttribute()
+    {
+        return $this->images != null ? $this->images()->OrderBy('id', 'desc')->first() : '';
     }
 
     public function images()

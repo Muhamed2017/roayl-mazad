@@ -40,22 +40,18 @@ class AuthController extends Controller
     {
         $guard = $request->route()->getName();
 
-        try {
-            $this->validate($request, [
-                'name' => 'nullable|string|max:255',
-                'phone' => $guard == 'user' ? 'required|string|max:255' : 'nullable|string|max:255',
-                'address' => 'nullable|string|max:250',
-                'email' => $guard == 'user' ? 'required|email|max:255|unique:users,email' : 'required|email|max:255|unique:admins,email',
-                'password' => 'required|confirmed|min:6|max:255',
-                'avatar' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000'
-            ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'successful' => '0',
-                'status'  => '02',
-                'error' => 'Invalid data: ' . $e
-            ], 400);
-        }
+        $this->validate($request, [
+            'name' => 'nullable|string|max:255',
+            'phone' => $guard == 'user' ? 'required|string|unique:users,phone|max:255' : 'nullable|string|max:255',
+            'address' => 'nullable|string|max:250',
+            'email' => $guard == 'user' ? 'required|email|max:255|unique:users,email' : 'required|email|max:255|unique:admins,email',
+            'password' => 'required|confirmed|min:6|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000',
+            'id_file' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000',
+            'country' => 'required|string|max:255',
+            'city' => "required|string|max:255",
+            'dob' => 'required|date_format:d-m-Y'
+        ]);
 
         $user_input = $request->only(
             'name',
@@ -63,6 +59,9 @@ class AuthController extends Controller
             'email',
             'address',
             'password',
+            'country',
+            'city',
+            'dob',
         );
         $admin_input = $request->only(
             'name',
@@ -90,6 +89,7 @@ class AuthController extends Controller
         if ($user->save()) {
 
             if ($request->hasFile('avatar')) (new AttachImagesToModel($request->avatar, $user))->saveImages();
+            if ($request->hasFile('id_file')) (new AttachImagesToModel($request->id_file, $user))->saveImages();
             // (new AddImagesToEntity($request->avatar, $user, ["width" => 600]))->execute();
 
 

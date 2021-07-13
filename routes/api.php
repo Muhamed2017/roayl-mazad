@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('signin', 'App\Http\Controllers\AuthController@login')->name('user');
-    Route::post('signup', 'App\Http\Controllers\AuthController@register')->name('user');
-});
+// Route::group(['prefix' => 'auth'], function () {
+Route::post('signin', 'App\Http\Controllers\AuthController@login')->name('user');
+Route::post('signup', 'App\Http\Controllers\AuthController@register')->name('user');
+// });
 
 Route::group(['middleware' => 'auth.user'], function () {
     // Route::get('vehicles', 'App\Http\Controllers\VehicleController@fetch');

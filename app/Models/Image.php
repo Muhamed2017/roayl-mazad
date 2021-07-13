@@ -27,6 +27,7 @@ class Image extends Model
     }
 
 
+
     public static function boot()
     {
         parent::boot();
