@@ -178,10 +178,14 @@ class VehicleController extends Controller
         $vehicles = QueryBuilder::for(Vehicle::class)->with('images')
             ->allowedFilters([
                 AllowedFilter::exact('category'),
-                AllowedFilter::scope('term_search')
+                // AllowedFilter::exact('year'),
+                AllowedFilter::exact('model'),
+                AllowedFilter::exact('company'),
+                // AllowedFilter::scope('term_search')
+                // ])
             ])->whereBetween('year', [$year_min, $year_max])
-            ->select('id', 'vehicle_title', 'fuel', 'model', 'color', 'odometer')
-            ->where('published', 0) // to be changed to 1 ..
+            ->select('id', 'vehicle_title', 'fuel', 'model', 'color', 'odometer', 'year')
+            // ->where('published', 0) // to be changed to 1 ..
             ->get();
 
         if (empty($vehicles)) return response()->json(['message' => 'No such vehicles'], 404);

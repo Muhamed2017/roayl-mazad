@@ -25,6 +25,7 @@ class Vehicle extends Model
         'odometer', 'special_notes', 'retail_value', 'published', 'featured', 'highlights', "selender",
         'category', 'color', 'model', 'year', 'company', 'starts_at_date',
 
+
     ];
     protected $appends = ['photo'];
 
