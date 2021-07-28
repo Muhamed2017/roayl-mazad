@@ -26,6 +26,7 @@ class Vehicle extends Model
         'category', 'color', 'model', 'year', 'company', 'starts_at_date',
 
     ];
+    protected $appends = ['photo'];
 
     public function user()
     {
@@ -36,6 +37,12 @@ class Vehicle extends Model
     public function images()
     {
         return $this->morphMany('App\Models\Image', 'imageable');
+    }
+
+    public function getPhotoAttribute()
+    {
+        // return $this->fetchFirstMedia() != null ? $this->images->first() : '';
+        return $this->fetchFirstMedia()->file_url ?? "";
     }
 
 

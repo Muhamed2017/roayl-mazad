@@ -296,7 +296,8 @@ class AuthController extends Controller
             'account_status' => $profile->account_status,
             'dob' => $profile->dob,
             'avatar' => $assets[0]->file_url ?? "",
-            'id_file' => $assets[1]->file_url ?? ""
+            'id_file' => $assets[1]->file_url ?? "",
+            'my_added_car' => $user->vehicles
 
         ], 200);
     }

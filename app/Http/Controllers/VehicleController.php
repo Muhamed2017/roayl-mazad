@@ -404,7 +404,6 @@ class VehicleController extends Controller
     {
 
         $vehicle = Vehicle::findOrFail($id);
-
         if (!$vehicle) {
             return response()->json([
                 'message' => "No Such Vehicle"
