@@ -86,7 +86,12 @@ class VehicleController extends Controller
 
                 ]);
 
-            if ($request->hasFile('photos')) (new AttachImagesToModel($request->photos, $vehicle))->saveImages();
+            // if ($request->hasFile('photos')) (new AttachImagesToModel($request->photos, $vehicle))->saveImages();
+            if ($request->hasFile('photos')) {
+                foreach ($request->photos as $photo) {
+                    $vehicle->attachMedia($photo);
+                }
+            }
 
 
             // $this->attachRelatedModels($vehicle, $request);
@@ -391,5 +396,25 @@ class VehicleController extends Controller
                 'message' => 'vehicle removed from saved successfully'
             ], 200);
         }
+    }
+
+
+
+    public function getVehicleById($id)
+    {
+
+        $vehicle = Vehicle::findOrFail($id);
+
+        if (!$vehicle) {
+            return response()->json([
+                'message' => "No Such Vehicle"
+            ], 404);
+        }
+        // $images = $vehicle->fetchAllMedia();
+
+        return response()->json([
+            'vehicle' => $vehicle,
+            'images' => $vehicle->fetchAllMedia()
+        ], 200);
     }
 }

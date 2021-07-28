@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth.user'], function () {
     Route::post('vehicle/unsave/{id}', 'App\Http\Controllers\VehicleController@unsave');
     Route::get('profile', 'App\Http\Controllers\AuthController@myProfile');
 });
+Route::get('vehicle/{id}', 'App\Http\Controllers\VehicleController@getVehicleById');
 
 // get all Vehicles endpoint
 Route::get('vehicles', 'App\Http\Controllers\VehicleController@getAllVehicles');

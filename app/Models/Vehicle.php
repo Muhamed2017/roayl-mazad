@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use CloudinaryLabs\CloudinaryLaravel\MediaAlly;
 
 class Vehicle extends Model
 {
-    use HasFactory;
+    use HasFactory, MediaAlly;
 
     protected $table = 'vehicle';
 
