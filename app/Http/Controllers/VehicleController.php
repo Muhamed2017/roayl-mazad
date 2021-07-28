@@ -7,7 +7,7 @@ use App\Models\Image;
 use App\Models\Saved;
 use App\Models\User;
 use App\Models\Vehicle;
-use App\Support\Services\AddImagesToEntity;
+// use App\Support\Services\AddImagesToEntity;
 use App\Support\Services\AttachImagesToModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -161,7 +161,7 @@ class VehicleController extends Controller
     // attaching vehicle model to image model function
     public function attachRelatedModels($vehicle, $request)
     {
-        if ($request->hasFile('photos')) (new AddImagesToEntity($request->photos, $vehicle, ["width" => 1024]))->execute();
+        // if ($request->hasFile('photos')) (new AddImagesToEntity($request->photos, $vehicle, ["width" => 1024]))->execute();
     }
 
 

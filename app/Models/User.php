@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use CloudinaryLabs\CloudinaryLaravel\MediaAlly;
+
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, MediaAlly;
+    // use MediaAlly,
 
     /**
      * The attributes that are mass assignable.
@@ -83,6 +86,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->morphMany('App\Models\Image', 'imageable');
     }
+
+
 
     public function getJWTIdentifier()
     {

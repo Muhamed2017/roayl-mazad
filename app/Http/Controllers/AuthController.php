@@ -9,8 +9,10 @@ use App\Http\Controllers\Controller;
 use App\Models\PasswordReset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
 use mysql_xdevapi\Exception;
 use Illuminate\Validation\Validator;
+
 use Response;
 use Hash;
 use Illuminate\Support\Facades\Austh;
@@ -23,6 +25,9 @@ use App\Models\Admin;
 use App\Support\Services\AttachImagesToModel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Carbon\Carbon;
+use App\Mail\SendMail;
+
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class AuthController extends Controller
 {
@@ -87,10 +92,13 @@ class AuthController extends Controller
         }
 
         if ($user->save()) {
+            if ($request->hasFile('avatar')) {
+                $user->attachMedia($request->avatar);
+            }
+            if ($request->hasFile('id_file')) {
+                $user->attachMedia($request->id_file);
+            }
 
-            if ($request->hasFile('avatar')) (new AttachImagesToModel($request->avatar, $user))->saveImages();
-            if ($request->hasFile('id_file')) (new AttachImagesToModel($request->id_file, $user))->saveImages();
-            // (new AddImagesToEntity($request->avatar, $user, ["width" => 600]))->execute();
 
 
             $token = auth($guard)->login($user);
@@ -194,9 +202,9 @@ class AuthController extends Controller
     {
         $user = null;
         if (!empty($request->email)) {
-            $user = User::with('images')->where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->first();
         } else if (!empty($request->mobile)) {
-            $user = User::with('images')->where('mobile', $request->mobile)->first();
+            $user = User::where('mobile', $request->mobile)->first();
         }
         return $user;
     }
@@ -210,5 +218,86 @@ class AuthController extends Controller
             $admin = Admin::with('images')->where('email', $request->email)->first();
         }
         return $admin;
+    }
+
+
+
+
+    //forget password
+    public function sendPasswordResetEmail(Request $request)
+    {
+        // If email does not exist
+        if (!$this->validEmail($request->email)) {
+            return response()->json([
+                'message' => 'Email does not exist.'
+            ], HttpFoundationResponse::HTTP_NOT_FOUND);
+        } else {
+            // If email exists
+            $this->sendMail($request->email);
+            return response()->json([
+                'message' => 'Check your inbox, we have sent a link to reset email.'
+            ], HttpFoundationResponse::HTTP_OK);
+        }
+    }
+
+    public function sendMail($email)
+    {
+        $token = $this->generateToken($email);
+        Mail::to($email)->send(new SendMail($token));
+    }
+
+    public function validEmail($email)
+    {
+        return !!User::where('email', $email)->first();
+    }
+
+    public function generateToken($email)
+    {
+        $isOtherToken = DB::table('recover_password')->where('email', $email)->first();
+
+        if ($isOtherToken) {
+            return $isOtherToken->token;
+        }
+
+        $token = Str::random(80);;
+        $this->storeToken($token, $email);
+        return $token;
+    }
+
+    public function storeToken($token, $email)
+    {
+        DB::table('recover_password')->insert([
+            'email' => $email,
+            'token' => $token,
+            'created' => Carbon::now()
+        ]);
+    }
+
+    public function myProfile()
+    {
+        $user = auth('user')->user();
+
+        $profile = User::findOrFail($user->id);
+        $assets = $profile->fetchAllMedia();
+
+        if (!$profile) {
+            return response()->json(['message' => 'user not exist'], 404);
+        }
+
+        return response()->json([
+            // 'profile' => $profile,
+            'id' => $profile->id,
+            'name' => $profile->name,
+            'phone' => $profile->phone,
+            'email' => $profile->email,
+            'city' => $profile->city,
+            'dob' => $profile->dob,
+            'address' => $profile->address,
+            'account_status' => $profile->account_status,
+            'dob' => $profile->dob,
+            'avatar' => $assets[0]->file_url ?? "",
+            'id_file' => $assets[1]->file_url ?? ""
+
+        ], 200);
     }
 }

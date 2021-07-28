@@ -167,7 +167,7 @@ return [
          */
 
         //  cloudniary
-        'JD\Cloudder\CloudderServiceProvider',
+        // 'JD\Cloudder\CloudderServiceProvider',
 
 
         /*
@@ -238,7 +238,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         // cloudinary
-        'Cloudder' => 'JD\Cloudder\Facades\Cloudder',
+        // 'Cloudder' => 'JD\Cloudder\Facades\Cloudder',
 
 
 
