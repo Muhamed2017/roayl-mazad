@@ -175,13 +175,11 @@ class VehicleController extends Controller
         $year_min = $request->year_min ?? 1800;
         $year_max = $request->year_max ?? 2060;
 
-        $vehicles = QueryBuilder::for(Vehicle::class)->with('images')
+        $vehicles = QueryBuilder::for(Vehicle::class)
             ->allowedFilters([
                 AllowedFilter::exact('category'),
-                // AllowedFilter::exact('year'),
                 AllowedFilter::exact('model'),
                 AllowedFilter::exact('company'),
-                // AllowedFilter::scope('term_search')
                 // ])
             ])->whereBetween('year', [$year_min, $year_max])
             ->select('id', 'vehicle_title', 'fuel', 'model', 'color', 'odometer', 'year')
