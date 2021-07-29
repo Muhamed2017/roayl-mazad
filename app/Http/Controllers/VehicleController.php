@@ -165,7 +165,7 @@ class VehicleController extends Controller
             'color' => 'nullable|string|max:250',
             'year' => 'nullable|string|max:50',
             'model' => 'nullable|string|max:250',
-            'starts_at_date' => 'datetime|nullable|max:250',
+            'starts_at_date' => 'date|nullable',
         ];
     }
 
