@@ -169,6 +169,64 @@ class VehicleController extends Controller
         ];
     }
 
+    public function updateGetValidationRules($id = '')
+    {
+        return [
+
+            'vehicle_title' => 'nullable|string|max:250',
+            'vehicle_vin' => 'nullable|string|max:250',
+            'published' => 'nullable|string|max:250',
+            'engine_type' => 'nullable|string|max:250',
+            'primary_damage' => 'nullable|string|max:250',
+            'retail_value' => 'nullable|numeric|max:10000',
+            'featured' => 'nullable|boolean',
+            'transmission' => 'nullable|string|max:250',
+            'vat_added' => 'nullable|numeric|max:250',
+            'selender' => 'nullable|numeric|max:250',
+            'fuel' => 'nullable|string|max:250',
+            'keys' => 'nullable|string|max:250',
+            'drive' => 'nullable|string|max:250',
+            'sell_type' => 'nullable|string|max:250',
+            'special_notes' => 'nullable|array',
+            'special_notes.*' => 'nullable|string|max:250',
+            'odometer' => 'nullable|numeric',
+
+            'company' => 'nullable|string|max:250',
+            'category' => 'nullable|string|max:250',
+            'color' => 'nullable|string|max:250',
+            'year' => 'nullable|string|max:50',
+            'model' => 'nullable|string|max:250',
+            'starts_at_date' => 'date|nullable',
+        ];
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        // if (!auth('admin')->user()->can('update product')) return response()->json($this->authorizationErr, 403);
+
+        $vehicle = Vehicle::find($id);
+
+        if (!$vehicle) return response()->json($this->entityNotFoundErr, 422);
+
+        $this->validate($request, $this->updateGetValidationRules($id));
+        $this->validate($request, [
+            'photos' => 'nullable|array',
+            'photos.*' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000|dimensions:min_width=1024,max_height=1024'
+        ]);
+
+        if ($vehicle->update($this->getInput($request))) {
+            if ($request->hasFile('photos')) {
+                foreach ($request->photos as $photo) {
+                    $vehicle->attachMedia($photo);
+                }
+            }
+            return response()->json($this->successfullUpdate('vehicle'), 200);
+        }
+
+        return response()->json($this->failedErr, 500);
+    }
+
 
     public function finder(Request $request)
     {
@@ -193,6 +251,28 @@ class VehicleController extends Controller
             'vehicles' => $vehicles,
         ], 200);
     }
+
+    // public function destroy($id, Request $request)
+    // {
+    //     // if (!auth('admin')->user()->can('delete product')) return response()->json($this->authorizationErr, 403);
+
+    //     $venue = Venue::find($id);
+    //     $booked_venue = Booking::all()->where('venue_id', '==', $id);
+    //     $saved_venue = Savings::all()->where('venue_id', '==', $id);
+    //     if (!$venue) return response()->json($this->entityNotFoundErr, 422);
+
+    //     if ($venue->delete()) {
+    //         foreach ($booked_venue as $booked) {
+    //             $booked->delete();
+    //         };
+    //         foreach ($saved_venue as $saved) {
+    //             $saved->delete();
+    //         };
+    //         return response()->json($this->entityDeletedSucc, 200);
+    //     }
+
+    //     return response()->json($this->failedErr, 500);
+    // }
 
     // getting all published vehicles in new feed pahe
 

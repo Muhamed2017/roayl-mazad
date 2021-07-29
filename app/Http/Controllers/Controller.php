@@ -59,4 +59,13 @@ class Controller extends BaseController
         'status' => '01',
         'message' => 'entity deleted successfully'
     ];
+
+    public function successfullUpdate($entity)
+    {
+        return [
+            'successful' => '1',
+            'status' => '01',
+            'message' => $entity . ' updated successfully'
+        ];
+    }
 }
