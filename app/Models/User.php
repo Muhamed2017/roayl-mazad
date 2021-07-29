@@ -68,9 +68,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function savedVehicles()
     {
-        return $this->belongsToMany('App\Models\Saved');
+        return $this->hasMany('App\Models\Vehicle');
     }
-
 
     public function getAvatarAttribute()
     {
@@ -86,7 +85,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->morphMany('App\Models\Image', 'imageable');
     }
-
 
 
     public function getJWTIdentifier()

@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth.user'], function () {
     Route::post('vehicle/save/{id}', 'App\Http\Controllers\VehicleController@save');
     Route::post('vehicle/unsave/{id}', 'App\Http\Controllers\VehicleController@unsave');
     Route::get('profile', 'App\Http\Controllers\AuthController@myProfile');
+    Route::get('homes', 'App\Http\Controllers\VehicleController@getHomes');
 });
 Route::get('vehicle/{id}', 'App\Http\Controllers\VehicleController@getVehicleById');
 
@@ -41,6 +42,7 @@ Route::get('vehicles/finder', 'App\Http\Controllers\VehicleController@finder');
 Route::get('ads', 'App\Http\Controllers\VehicleController@getHomeAds');
 Route::get('my-cars', 'App\Http\Controllers\VehicleController@getUserVehicles');
 Route::get('featured', 'App\Http\Controllers\VehicleController@getFeaturedVehicles');
+Route::get('auctions', 'App\Http\Controllers\VehicleController@allAuctions');
 Route::get('home', 'App\Http\Controllers\VehicleController@getHomestuff');
 
 

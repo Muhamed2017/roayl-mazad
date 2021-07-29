@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ad;
+use App\Models\Auction;
 use App\Models\Image;
 use App\Models\Saved;
 use App\Models\User;
 use App\Models\Vehicle;
 // use App\Support\Services\AddImagesToEntity;
-use App\Support\Services\AttachImagesToModel;
+// use App\Support\Services\AttachImagesToModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
@@ -69,7 +70,7 @@ class VehicleController extends Controller
         $input['user_id'] = auth($guard)->id();
         $input['listed_by'] = $guard;
         $vehicle = new Vehicle($input);
-
+        $auction = new Auction();
         if ($vehicle->save()) {
             $this->database->getReference('/Auctions')
                 ->push([
@@ -80,21 +81,27 @@ class VehicleController extends Controller
                     'vehicle_initial_price' => $vehicle->retail_value,
                     'vehicle_start_data' => $vehicle->starts_at_date,
                     'sell_type' => $vehicle->sell_type,
+                    'final_price' => 0,
                     'initial_price' => 0,
                     'negotiation_price' => 0
                     // 'vehicle_start_data' => Carbon::createFromDate()->addDays(5),
-
                 ]);
+            $auction->vehicle_id = $vehicle->id;
+            $auction->vehicle_title = $vehicle->vehicle_title;
+            $auction->lister_id = $owner->id;
+            $auction->lister_name = $owner->name;
+            // $auction->retail_value = $vehicle->retail_value;
+            $auction->vehicle_start_data = Carbon::createFromDate()->addDays(5);
+            $auction->sell_type = $vehicle->sell_type;
+            $auction->final_price = 0;
+            $auction->save();
 
-            // if ($request->hasFile('photos')) (new AttachImagesToModel($request->photos, $vehicle))->saveImages();
             if ($request->hasFile('photos')) {
                 foreach ($request->photos as $photo) {
                     $vehicle->attachMedia($photo);
                 }
             }
 
-
-            // $this->attachRelatedModels($vehicle, $request);
             return response()->json($this->entityCreatedSucc, 200);
         }
 
@@ -120,7 +127,6 @@ class VehicleController extends Controller
             'keys',
             'published',
             'featured',
-
             'model',
             'year',
             'company',
@@ -163,12 +169,6 @@ class VehicleController extends Controller
         ];
     }
 
-    // attaching vehicle model to image model function
-    public function attachRelatedModels($vehicle, $request)
-    {
-        // if ($request->hasFile('photos')) (new AddImagesToEntity($request->photos, $vehicle, ["width" => 1024]))->execute();
-    }
-
 
     public function finder(Request $request)
     {
@@ -199,7 +199,7 @@ class VehicleController extends Controller
     public function getAllVehicles()
     {
         // $vehicles = Vehicle::with('images')->where('published', '0')->latest()->get();
-        $vehicles = Vehicle::with('images')->latest()->get();
+        $vehicles = Vehicle::latest()->get();
 
         if (!$vehicles) return response()->json([
             'message' => 'No Vehicles published'
@@ -212,12 +212,23 @@ class VehicleController extends Controller
 
 
 
-    // get all featured cars
+    // return all auctions ...
+    public function allAuctions()
+    {
+        $today_auctions = Auction::whereDate('vehicle_start_data',  Carbon::Now())->get();
+        $upcoming_auctions = Auction::whereDate('vehicle_start_data', '>', Carbon::Now())->get();
+        $last_auctions = Auction::whereDate('vehicle_start_data', '<', Carbon::Now())->get();
+        return response()->json([
+            'today_auctions' => $today_auctions,
+            'upcoming_auctions' => $upcoming_auctions,
+            'last_auctions' => $last_auctions,
+        ], 200);
+    }
 
+    // get all featured cars
     public function getFeaturedVehicles()
     {
         // $vehicles = Vehicle::with('images')->where('featured', true)->latest()->get('vehicle_title');
-
         $vehicles = collect($this->dummy_vehicles);
         if (!$vehicles) return response()->json([
             'message' => 'No Featured Vehicles'
@@ -278,7 +289,10 @@ class VehicleController extends Controller
 
     public function getHomestuff()
     {
+        $user = auth('user')->user();
+
         $vehicles = collect($this->dummy_vehicles);
+
         $ads = collect([
             [
                 'title' => 'Advertisment One',
@@ -314,10 +328,57 @@ class VehicleController extends Controller
             'ads' => $ads,
             'fetuered' => $vehicles,
             'user_cars_won' => $vehicles,
-            'user_cars_counter' => $vehicles
+            'user_cars_counter' => $vehicles,
+            'user_saved_cars' => $vehicles
         ], 200);
     }
 
+    // public function getHomes()
+    // {
+    //     $user = auth('user')->user();
+    //     $data = User::find($user->id)->with('savedVehicles')->get();
+    //     // return response()->json(['MM' => $user], 200);
+    //     $vehicles = collect($this->dummy_vehicles);
+
+    //     $ads = collect([
+    //         [
+    //             'title' => 'Advertisment One',
+    //             'link' => '#',
+    //             'img' => 'https://via.placeholder.com/150/FF0000/FFFFFF?Text=AdOne'
+    //         ],
+    //         [
+    //             'title' => 'Advertisment Two',
+    //             'link' => '#',
+    //             'img' => 'https://via.placeholder.com/150/00FF00/FFFFFF?Text=AdTwo'
+    //         ],
+    //         [
+    //             'title' => 'Advertisment Three',
+    //             'link' => '#',
+    //             'img' => 'https://via.placeholder.com/150/FFFF00/FFFFFF?Text=AdThree'
+    //         ],
+    //         [
+    //             'title' => 'Advertisment Four',
+    //             'link' => '#',
+    //             'img' => 'https://via.placeholder.com/150/000000/FFFFFF?Text=AdFour'
+    //         ],
+    //         [
+    //             'title' => 'Advertisment Five',
+    //             'link' => '#',
+    //             'img' => 'https://via.placeholder.com/150/0000FF/FFFFFF?Text=AdFive'
+    //         ],
+    //     ]);
+    //     if (!$vehicles || !$ads) return response()->json([
+    //         'message' => 'some thing went weong!'
+    //     ], 500);
+
+    //     return response()->json([
+    //         // 'ads' => $ads,
+    //         // 'fetuered' => $vehicles,
+    //         // 'user_cars_won' => $vehicles,
+    //         // 'user_cars_counter' => $vehicles,
+    //         // 'user_saved' => $data ?? ""
+    //     ], 200);
+    // }
 
     //saving a vehicle
 

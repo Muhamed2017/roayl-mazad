@@ -35,6 +35,11 @@ class Vehicle extends Model
     }
 
 
+    public function auction()
+    {
+        return   $this->hasOne('App\Models\Auction');
+    }
+
     public function images()
     {
         return $this->morphMany('App\Models\Image', 'imageable');
@@ -49,7 +54,7 @@ class Vehicle extends Model
 
     public function saves()
     {
-        return $this->belongsToMany('App\Models\Saved');
+        return $this->belongsToMany('App\Models\User');
     }
 
     public function scopeTermSearch(Builder $query, $term): Builder
