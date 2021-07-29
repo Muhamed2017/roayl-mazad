@@ -26,6 +26,11 @@ Route::post('signup', 'App\Http\Controllers\AuthController@register')->name('use
 Route::group(['middleware' => 'auth.user'], function () {
     // Route::get('vehicles', 'App\Http\Controllers\VehicleController@fetch');
     Route::post('vehicles', 'App\Http\Controllers\VehicleController@store')->name('user');
+    Route::post('vehicles/update/{id}', 'App\Http\Controllers\VehicleController@update');
+    Route::post('vehicles/delete/{id}', 'App\Http\Controllers\VehicleController@destroy');
+
+    // Route::post('vehicles/delete/{id}', 'App\Http\Controllers\VehicleController@destroy');
+
     // Route::put('vehicle/{id}', 'App\Http\Controllers\VehicleController@update');
     // Route::delete('vehicle/{id}', 'App\Http\Controllers\VehicleController@destroy');
     // Route::get('user-vehicles', 'App\Http\Controllers\VehicleController@userVehicles');
@@ -35,7 +40,6 @@ Route::group(['middleware' => 'auth.user'], function () {
     Route::get('homes', 'App\Http\Controllers\VehicleController@getHomes');
 });
 Route::get('vehicle/{id}', 'App\Http\Controllers\VehicleController@getVehicleById');
-Route::post('vehicles/update/{id}', 'App\Http\Controllers\VehicleController@update');
 
 // get all Vehicles endpoint
 Route::get('vehicles', 'App\Http\Controllers\VehicleController@getAllVehicles');

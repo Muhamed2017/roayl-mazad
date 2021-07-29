@@ -252,27 +252,27 @@ class VehicleController extends Controller
         ], 200);
     }
 
-    // public function destroy($id, Request $request)
-    // {
-    //     // if (!auth('admin')->user()->can('delete product')) return response()->json($this->authorizationErr, 403);
+    public function destroy($id, Request $request)
+    {
+        // if (!auth('admin')->user()->can('delete product')) return response()->json($this->authorizationErr, 403);
 
-    //     $venue = Venue::find($id);
-    //     $booked_venue = Booking::all()->where('venue_id', '==', $id);
-    //     $saved_venue = Savings::all()->where('venue_id', '==', $id);
-    //     if (!$venue) return response()->json($this->entityNotFoundErr, 422);
+        $vehicle = Vehicle::find($id);
+        $vehicle_auction = Auction::all()->where('vehicle_id', '==', $id);
+        $saved_vehicles = Saved::all()->where('vehicle_id', '==', $id);
+        if (!$vehicle) return response()->json($this->entityNotFoundErr, 422);
 
-    //     if ($venue->delete()) {
-    //         foreach ($booked_venue as $booked) {
-    //             $booked->delete();
-    //         };
-    //         foreach ($saved_venue as $saved) {
-    //             $saved->delete();
-    //         };
-    //         return response()->json($this->entityDeletedSucc, 200);
-    //     }
+        if ($vehicle->delete()) {
+            foreach ($vehicle_auction as $auction) {
+                $auction->delete();
+            };
+            foreach ($saved_vehicles as $saved) {
+                $saved->delete();
+            };
+            return response()->json($this->entityDeletedSucc, 200);
+        }
 
-    //     return response()->json($this->failedErr, 500);
-    // }
+        return response()->json($this->failedErr, 500);
+    }
 
     // getting all published vehicles in new feed pahe
 
