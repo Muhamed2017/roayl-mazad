@@ -90,7 +90,7 @@ class VehicleController extends Controller
             $auction->vehicle_title = $vehicle->vehicle_title;
             $auction->lister_id = $owner->id;
             $auction->lister_name = $owner->name;
-            // $auction->retail_value = $vehicle->retail_value;
+            $auction->retail_value = $vehicle->retail_value;
             $auction->vehicle_start_data = Carbon::createFromDate()->addDays(5);
             $auction->sell_type = $vehicle->sell_type;
             $auction->final_price = 0;
@@ -165,7 +165,7 @@ class VehicleController extends Controller
             'color' => 'nullable|string|max:250',
             'year' => 'nullable|string|max:50',
             'model' => 'nullable|string|max:250',
-            'starts_at_date' => 'nullable|string|max:250',
+            'starts_at_date' => 'datetime|nullable|max:250',
         ];
     }
 
