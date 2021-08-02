@@ -79,7 +79,7 @@ class VehicleController extends Controller
                     'listed_name' => $owner->name,
                     'lister_id' => $owner->id,
                     'vehicle_initial_price' => $vehicle->retail_value,
-                    'vehicle_start_data' => $vehicle->starts_at_date,
+                    'vehicle_start_date' => $vehicle->starts_at_date,
                     'vehicle_start_time' => $vehicle->starts_at_time,
                     'sell_type' => $vehicle->sell_type,
                     'final_price' => 0,
@@ -94,7 +94,7 @@ class VehicleController extends Controller
             $auction->lister_id = $owner->id;
             $auction->lister_name = $owner->name;
             $auction->retail_value = $vehicle->retail_value;
-            $auction->vehicle_start_data = $vehicle->starts_at_date;
+            $auction->vehicle_start_date = $vehicle->starts_at_date;
             $auction->vehicle_start_time = $vehicle->starts_at_time;
             $auction->sell_type = $vehicle->sell_type;
             $auction->final_price = 0;
@@ -309,7 +309,7 @@ class VehicleController extends Controller
         $upcoming_auctions = [];
         $last_auctions = [];
         foreach ($auctions as $auction) {
-            $auction_start_date = Carbon::createFromFormat('d/m/Y', $auction->vehicle_start_data)->toDateString();
+            $auction_start_date = Carbon::createFromFormat('d/m/Y', $auction->vehicle_start_date)->toDateString();
             $today = Carbon::today()->toDateString();
 
             if ($auction_start_date == $today) {
