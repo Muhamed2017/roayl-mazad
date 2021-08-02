@@ -23,7 +23,8 @@ class CreateAuctionsTable extends Migration
             $table->string("sell_type");
             $table->integer("final_price");
             $table->string("retail_value");
-            $table->timestamp("vehicle_start_data");
+            $table->string("vehicle_start_data");
+            $table->string("vehicle_start_time");
             $table->string("auction_owner")->nullable();
             $table->string("auction_owner_id")->nullable();
             $table->timestamps();
