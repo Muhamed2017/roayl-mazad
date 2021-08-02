@@ -94,7 +94,7 @@ class VehicleController extends Controller
             $auction->lister_id = $owner->id;
             $auction->lister_name = $owner->name;
             $auction->retail_value = $vehicle->retail_value;
-            $auction->vehicle_start_date = $vehicle->starts_at_date;
+            $auction->vehicle_start_data = $vehicle->starts_at_date;
             $auction->vehicle_start_time = $vehicle->starts_at_time;
             $auction->sell_type = $vehicle->sell_type;
             $auction->final_price = 0;
@@ -302,13 +302,30 @@ class VehicleController extends Controller
     // return all auctions ...
     public function allAuctions()
     {
-        $today_auctions = Auction::whereDate('vehicle_start_data',  Carbon::Now())->get();
-        $upcoming_auctions = Auction::whereDate('vehicle_start_data', '>', Carbon::Now())->get();
-        $last_auctions = Auction::whereDate('vehicle_start_data', '<', Carbon::Now())->get();
+        $auctions = Auction::all();
+
+        // $date = Carbon::createFromFormat('d/m/Y h:i A', $auction->vehicle_start_data . $auction->vehicle_start_time);
+        $today_auctions = [];
+        $upcoming_auctions = [];
+        $last_auctions = [];
+        foreach ($auctions as $auction) {
+            $auction_start_date = Carbon::createFromFormat('d/m/Y', $auction->vehicle_start_data)->toDateString();
+            $today = Carbon::today()->toDateString();
+
+            if ($auction_start_date == $today) {
+                array_push($today_auctions, $auction);
+            }
+            if ($auction_start_date > $today) {
+                array_push($upcoming_auctions, $auction);
+            } else {
+                array_push($last_auctions, $auction);
+            }
+        }
         return response()->json([
             'today_auctions' => $today_auctions,
             'upcoming_auctions' => $upcoming_auctions,
             'last_auctions' => $last_auctions,
+            // 'today' => Carbon::today()->toDateString()
         ], 200);
     }
 
