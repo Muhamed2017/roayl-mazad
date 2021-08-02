@@ -72,7 +72,7 @@ class VehicleController extends Controller
         $vehicle = new Vehicle($input);
         $auction = new Auction();
         if ($vehicle->save()) {
-            $this->database->getReference('/Auctions')
+            $firebase_auction = $this->database->getReference('/Auctions' . "/" . $vehicle->id)
                 ->push([
                     'vehicle_id' => $vehicle->id,
                     'vehicle_title' => $vehicle->vehicle_title,
@@ -85,8 +85,10 @@ class VehicleController extends Controller
                     'initial_price' => 0,
                     'negotiation_price' => 0
                     // 'vehicle_start_data' => Carbon::createFromDate()->addDays(5),
-                ]);
+                ])->getKey();
+
             $auction->vehicle_id = $vehicle->id;
+            $auction->firebase_id = $firebase_auction;
             $auction->vehicle_title = $vehicle->vehicle_title;
             $auction->lister_id = $owner->id;
             $auction->lister_name = $owner->name;
@@ -132,7 +134,8 @@ class VehicleController extends Controller
             'company',
             'category',
             'color',
-            'starts_at_date'
+            'starts_at_date',
+            'starts_at_time'
         );
 
         return $input;
@@ -165,7 +168,8 @@ class VehicleController extends Controller
             'color' => 'nullable|string|max:250',
             'year' => 'nullable|string|max:50',
             'model' => 'nullable|string|max:250',
-            'starts_at_date' => 'date|nullable',
+            'starts_at_date' => 'nullable|date_format:d/m/Y',
+            'starts_at_time' => 'nullable|date_format:h:i A',
         ];
     }
 
@@ -197,6 +201,7 @@ class VehicleController extends Controller
             'year' => 'nullable|string|max:50',
             'model' => 'nullable|string|max:250',
             'starts_at_date' => 'date|nullable',
+            'starts_at_time' => 'date|nullable',
         ];
     }
 
@@ -531,7 +536,6 @@ class VehicleController extends Controller
         } else {
             $vehicle = Vehicle::findOrFail($id);
             $saved->delete();
-
             $vehicle->save();
             return response()->json([
                 'successful' => '1',

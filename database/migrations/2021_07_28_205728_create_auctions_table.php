@@ -16,6 +16,7 @@ class CreateAuctionsTable extends Migration
         Schema::create('auctions', function (Blueprint $table) {
             $table->id();
             $table->string("vehicle_id");
+            $table->string("firebase_id")->nullable();
             $table->string("vehicle_title");
             $table->string("lister_name");
             $table->string("lister_id");

@@ -55,7 +55,7 @@ class AuthController extends Controller
             'id_file' => 'nullable|image|mimes:jpeg,bmp,jpg,png|between:1,6000',
             'country' => 'required|string|max:255',
             'city' => "required|string|max:255",
-            'dob' => 'required|date_format:d-m-Y'
+            'dob' => 'required|date_format:d/m/Y'
         ]);
 
         $user_input = $request->only(
@@ -300,5 +300,20 @@ class AuthController extends Controller
             'my_added_car' => $user->vehicles
 
         ], 200);
+    }
+
+
+    public function ShowUserProfile($id)
+    {
+
+        $user = User::find($id);
+        if ($user) {
+            return response()->json([
+                'user' => $user
+            ], 200);
+        }
+        return response()->json([
+            'message' => "User Not Founed Or Deleted! "
+        ], 404);
     }
 }

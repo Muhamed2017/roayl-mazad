@@ -16,14 +16,16 @@ class Vehicle extends Model
     protected $casts = [
         // 'odometer' => 'array',
         'special_notes' => 'array',
+        // 'starts_at_date' => 'datetime:dd/mm/YYYY'
     ];
 
+    protected $date_formats = 'dd/mm/YYYY';
 
     protected $fillable = [
         'user_id', 'listed_by', 'vehicle_title', 'vehicle_vin', 'primary_damage',
         'transmission', 'fuel', 'engine_type', 'vat_added', 'sell_type', 'drive', 'keys',
         'odometer', 'special_notes', 'retail_value', 'published', 'featured', 'highlights', "selender",
-        'category', 'color', 'model', 'year', 'company', 'starts_at_date',
+        'category', 'color', 'model', 'year', 'company', 'starts_at_date', 'starts_at_time'
 
 
     ];

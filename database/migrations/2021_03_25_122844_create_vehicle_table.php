@@ -37,7 +37,8 @@ class CreateVehicleTable extends Migration
             $table->string('category')->nullable();
             $table->integer('year')->nullable();
             $table->string('company')->nullable();
-            $table->timestamp('starts_at_date')->nullable();
+            $table->string('starts_at_date')->nullable();
+            $table->string('starts_at_time')->nullable();
             $table->tinyInteger('featured')->default(0);
             $table->string('published')->default('pending');
             $table->timestamps();

@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use CloudinaryLabs\CloudinaryLaravel\MediaAlly;
 
-
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, MediaAlly;
@@ -43,14 +42,19 @@ class User extends Authenticatable implements JWTSubject
     ];
 
 
-    protected $appends = ['avatar', 'id_file'];
+    protected $appends = ['files'];
 
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
+
+    // protected $dateFormat = 'dd/mm/YYYY';
+
     protected $casts = [
+        'created_at',
+        'updated_at',
         'email_verified_at' => 'datetime',
     ];
 
@@ -58,6 +62,7 @@ class User extends Authenticatable implements JWTSubject
         "image" => "Users/Images/",
         "thumb" => "Users/Thumbnails/"
     ];
+
 
 
 
@@ -71,20 +76,25 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany('App\Models\Vehicle');
     }
 
-    public function getAvatarAttribute()
+    // public function getAvatarAttribute()
+    // {
+    //     return $this->medially()->get('file_url');
+    // }
+
+    public function getFilesAttribute()
     {
-        return $this->images != null ? $this->images->first() : '';
+        return $this->medially()->get('file_url');
     }
 
-    public function getIdFileAttribute()
-    {
-        return $this->images != null ? $this->images()->OrderBy('id', 'desc')->first() : '';
-    }
+    // public function getIdFileAttribute()
+    // {
+    //     return $this->images != null ? $this->images()->OrderBy('id', 'desc')->first() : '';
+    // }
 
-    public function images()
-    {
-        return $this->morphMany('App\Models\Image', 'imageable');
-    }
+    // public function images()
+    // {
+    //     return $this->morphMany('App\Models\Image', 'imageable');
+    // }
 
 
     public function getJWTIdentifier()

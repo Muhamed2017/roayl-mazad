@@ -49,6 +49,7 @@ Route::get('my-cars', 'App\Http\Controllers\VehicleController@getUserVehicles');
 Route::get('featured', 'App\Http\Controllers\VehicleController@getFeaturedVehicles');
 Route::get('auctions', 'App\Http\Controllers\VehicleController@allAuctions');
 Route::get('home', 'App\Http\Controllers\VehicleController@getHomestuff');
+Route::get("user/{id}", "App\Http\Controllers\AuthController@ShowUserProfile");
 
 
 
@@ -58,10 +59,8 @@ Route::get('home', 'App\Http\Controllers\VehicleController@getHomestuff');
 // admin apis
 
 Route::group(['prefix' => 'admin'], function () {
-
     Route::post('signin', 'App\Http\Controllers\AuthController@login')->name('admin');
     Route::post('signup', 'App\Http\Controllers\AuthController@register')->name('admin');
-
     Route::group(['middleware' => 'auth_admin'], function () {
         Route::post('blockuser/{id}', 'App\Http\Controllers\AdminController@changeStateOfUser');
         Route::post('ads', 'App\Http\Controllers\AdminController@addAdvertisment');
