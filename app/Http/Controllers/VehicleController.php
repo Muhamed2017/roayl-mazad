@@ -28,23 +28,28 @@ class VehicleController extends Controller
 
     private $dummy_vehicles = [
         [
-            'vehicle_title' => 'Tesla', 'model' => '2021', 'odemeter' => '196.520', 'fuel' => '95', 'lot' => '#533654 | MD - BALTIMORE | C/3550',
+            'vehicle_id' => 1, 'vehicle_title' => 'Tesla', 'model' => '2021', 'odemeter' => '196.520', 'fuel' => '95', 'lot' => '#533654 | MD - BALTIMORE | C/3550',
+            'vehicle_starts_date' => '20/11/2018', 'vehicle_starts_time' => '10:00 AM',
             'img' => 'https://www.drivespark.com/images/2021-06/skoda-kushaq-39.jpg'
         ],
         [
-            'vehicle_title' => 'Nissan', 'model' => '2019', 'odemeter' => '192.53', 'fuel' => '90', 'lot' => '#966322 | MD - OMAN | C/3550',
+            'vehicle_id' => 2, 'vehicle_title' => 'Nissan', 'model' => '2019', 'odemeter' => '192.53', 'fuel' => '90', 'lot' => '#966322 | MD - OMAN | C/3550',
+            'vehicle_starts_date' => '18/12/2019', 'vehicle_starts_time' => '01:00 AM',
             'img' => 'https://www.drivespark.com/images/2021-06/ferrari-296-gtb-1.jpg'
         ],
         [
-            'vehicle_title' => 'Toyota', 'model' => '2020', 'odemeter' => '126.220', 'fuel' => '92', 'lot' => '#366512 | MD - EGYPT | C/3550',
+            'vehicle_id' => 3, 'vehicle_title' => 'Toyota', 'model' => '2020', 'odemeter' => '126.220', 'fuel' => '92', 'lot' => '#366512 | MD - EGYPT | C/3550',
+            'vehicle_starts_date' => '13/11/2021', 'vehicle_starts_time' => '06:00 PM',
             'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-3.jpg'
         ],
         [
-            'vehicle_title' => 'Nissan', 'model' => '2018', 'odemeter' => '166.16', 'fuel' => '80', 'lot' => '#200254 | MD - NY City | C/2550',
+            'vehicle_id' => 4, 'vehicle_title' => 'Nissan', 'model' => '2018', 'odemeter' => '166.16', 'fuel' => '80', 'lot' => '#200254 | MD - NY City | C/2550',
+            'vehicle_starts_date' => '20/11/2018', 'vehicle_starts_time' => '10:30 AM',
             'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-7.jpg'
         ],
         [
-            'vehicle_title' => 'BMW', 'model' => '2020', 'odemeter' => '255.520', 'fuel' => '92', 'lot' => '#369834 | MD - KWAIT | C/3130',
+            'vehicle_id' => 5, 'vehicle_title' => 'BMW', 'model' => '2020', 'odemeter' => '255.520', 'fuel' => '92', 'lot' => '#369834 | MD - KWAIT | C/3130',
+            'vehicle_starts_date' => '15/08/2022', 'vehicle_starts_time' => '12:30 AM',
             'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-9.jpg'
         ],
     ];
@@ -490,11 +495,11 @@ class VehicleController extends Controller
     {
         $user = auth('user')->user();
         $vehicle = Vehicle::find($id);
-        if (!$user) {
+        if (!$vehicle) {
             return response()->json([
                 'successful' => '0',
                 'status' => '02',
-                'message' => 'user not found'
+                'message' => 'vehicle not found'
             ], 422);
         }
         $user_id = $user->id;
@@ -569,17 +574,27 @@ class VehicleController extends Controller
     public function getVehicleById($id)
     {
 
-        $vehicle = Vehicle::findOrFail($id);
+        $user_id = auth('user')->user()->id;
+        if (!$user_id) {
+            $is_saved = false;
+        } else {
+            $is_saved = Saved::all()->where('user_id', '==', $user_id)
+                ->where('vehicle_id', '==', $id)
+                ->first();
+        }
+        $vehicle = Vehicle::find($id);
         if (!$vehicle) {
             return response()->json([
                 'message' => "No Such Vehicle"
             ], 404);
         }
-        // $images = $vehicle->fetchAllMedia();
+
+
 
         return response()->json([
             'vehicle' => $vehicle,
-            'images' => $vehicle->fetchAllMedia()
+            'images' => $vehicle->fetchAllMedia(),
+            'is_saved' => $is_saved ? true : false
         ], 200);
     }
 }
