@@ -583,19 +583,22 @@ class VehicleController extends Controller
                 ->first();
         }
         $vehicle = Vehicle::find($id);
+
         if (!$vehicle) {
             return response()->json([
                 'message' => "No Such Vehicle"
             ], 404);
         }
 
+        $auction_firebase_id = Auction::all()->where('vehicle_id', $vehicle->id);
 
 
         return response()->json([
             'vehicle' => $vehicle,
             'images' => $vehicle->fetchAllMedia(),
             'final_price' => 500,
-            'is_saved' => $is_saved ? true : false
+            'is_saved' => $is_saved ? true : false,
+            'fb_id' => $auction_firebase_id
         ], 200);
     }
 }
