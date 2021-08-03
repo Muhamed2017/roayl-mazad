@@ -48,9 +48,9 @@ class VehicleController extends Controller
             'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-7.jpg'
         ],
         [
-            'vehicle_id' => 5, 'vehicle_title' => 'BMW', 'model' => '2020', 'odemeter' => '255.520', 'fuel' => '92', 'lot' => '#369834 | MD - KWAIT | C/3130',
+            'vehicle_id' => 95, 'user_id' => 5, 'vehicle_title' => 'BMW', 'model' => '2020', 'odemeter' => '255.520', 'fuel' => '92', 'lot' => '#369834 | MD - KWAIT | C/3130',
             'vehicle_starts_date' => '15/08/2022', 'vehicle_starts_time' => '12:30 AM',
-            'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-9.jpg'
+            'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-9.jpg', 'final_price' => 500
         ],
     ];
 
@@ -594,6 +594,7 @@ class VehicleController extends Controller
         return response()->json([
             'vehicle' => $vehicle,
             'images' => $vehicle->fetchAllMedia(),
+            'final_price' => 500,
             'is_saved' => $is_saved ? true : false
         ], 200);
     }
