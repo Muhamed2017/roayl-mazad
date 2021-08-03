@@ -591,7 +591,7 @@ class VehicleController extends Controller
             ], 404);
         }
 
-        $auction_firebase_id = DB::table('auctions')->select('firebase_id')->where('vehicle_id', $id);
+        $auction_firebase_id = Auction::get('firebase_id')->where('vehicle_id', $id);
 
 
         return response()->json([
