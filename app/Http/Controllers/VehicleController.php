@@ -30,7 +30,7 @@ class VehicleController extends Controller
         [
             'vehicle_id' => 1, 'vehicle_title' => 'Tesla', 'model' => '2021', 'odemeter' => '196.520', 'fuel' => '95', 'lot' => '#533654 | MD - BALTIMORE | C/3550',
             'vehicle_starts_date' => '20/11/2018', 'vehicle_starts_time' => '10:00 AM',
-            'img' => 'https://www.drivespark.com/images/2021-06/skoda-kushaq-39.jpg'
+            'img' => 'https://www.drivespark.com/images/2021-06/skoda-kushaq-39.jpg',
         ],
         [
             'vehicle_id' => 2, 'vehicle_title' => 'Nissan', 'model' => '2019', 'odemeter' => '192.53', 'fuel' => '90', 'lot' => '#966322 | MD - OMAN | C/3550',
@@ -51,7 +51,13 @@ class VehicleController extends Controller
             'vehicle_id' => 5, 'vehicle_title' => 'BMW', 'model' => '2020', 'odemeter' => '255.520', 'fuel' => '92', 'lot' => '#369834 | MD - KWAIT | C/3130',
             'vehicle_starts_date' => '15/08/2022', 'vehicle_starts_time' => '12:30 AM',
             'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-9.jpg'
+
         ],
+        [
+            'vehicle_id' => 95, 'lister_id' => 5, 'vehicle_title' => 'BMW', 'model' => '2020', 'odemeter' => '255.520', 'fuel' => '92', 'lot' => '#369834 | MD - KWAIT | C/3130',
+            'vehicle_starts_date' => '15/08/2022', 'vehicle_starts_time' => '12:30 AM',
+            'img' => 'https://www.drivespark.com/images/2021-06/2022-honda-civic-hatchback-9.jpg', 'final_price' => 500
+        ]
     ];
 
     public function __construct(JWTAuth $auth, Database $database)
