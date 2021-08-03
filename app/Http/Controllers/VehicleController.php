@@ -13,6 +13,7 @@ use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Storage;
 use Kreait\Firebase\Database;
@@ -590,7 +591,7 @@ class VehicleController extends Controller
             ], 404);
         }
 
-        $auction_firebase_id = Auction::all()->where('vehicle_id', $vehicle->id);
+        $auction_firebase_id = DB::table('auctions')->select('firebase_id')->where('vehicle_id', $id);
 
 
         return response()->json([
