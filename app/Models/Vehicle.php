@@ -29,12 +29,16 @@ class Vehicle extends Model
 
 
     ];
-    protected $appends = ['photo'];
+    protected $appends = ['photo', 'fbid'];
+
+
 
     public function user()
     {
         return $this->belongsTo('App\Models\User');
     }
+
+
 
 
     public function auction()
@@ -68,6 +72,11 @@ class Vehicle extends Model
             ->orWhere('model', 'LIKE', "%" . $term . "%")
             ->orWhere('primary_damage', 'LIKE', "%" . $term . "%")
             ->orWhere('category', 'LIKE', "%" . $term . "%");
+    }
+
+    public function getFbidAttribute()
+    {
+        return $this->auction->firebase_id;
     }
 
     public static function boot()

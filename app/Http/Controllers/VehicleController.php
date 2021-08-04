@@ -78,7 +78,7 @@ class VehicleController extends Controller
         $vehicle = new Vehicle($input);
         $auction = new Auction();
         if ($vehicle->save()) {
-            $firebase_auction = $this->database->getReference('/Auctions' . "/" . $vehicle->id)
+            $firebase_auction = $this->database->getReference('/Auctions')
                 ->push([
                     'vehicle_id' => $vehicle->id,
                     'vehicle_title' => $vehicle->vehicle_title,
@@ -91,7 +91,6 @@ class VehicleController extends Controller
                     'final_price' => 0,
                     'initial_price' => 0,
                     'negotiation_price' => 0
-                    // 'vehicle_start_data' => Carbon::createFromDate()->addDays(5),
                 ])->getKey();
 
             $auction->vehicle_id = $vehicle->id;
@@ -598,7 +597,7 @@ class VehicleController extends Controller
             'images' => $vehicle->fetchAllMedia(),
             'final_price' => 500,
             'is_saved' => $is_saved ? true : false,
-            'fb_id' => $auction_firebase_id
+            // 'fb_id' => $auction_firebase_id
         ], 200);
     }
 }
