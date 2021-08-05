@@ -90,7 +90,8 @@ class VehicleController extends Controller
                     'sell_type' => $vehicle->sell_type,
                     'final_price' => 0,
                     'initial_price' => 0,
-                    'negotiation_price' => 0
+                    'negotiation_price' => 0,
+                    'heighest_pidder' => null
                 ])->getKey();
 
             $auction->vehicle_id = $vehicle->id;
